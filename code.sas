@@ -9,8 +9,6 @@ input
 ;
 run;
 
-
-
 proc format;
 value age
 0-4 = "0-4" 
@@ -80,14 +78,12 @@ value suffer
 0="No evento doloroso negli ultimi tre anni"
 1="Almeno un evento doloroso negli ultimi tre anni";
 
-
 /* dataset con tutte le classi di età */
 data prova2.completo;
 set prova2.salute2013;
 keep sesso eta ictus fumo iper bmi cuore mcs MH EVDOL1 iposo1
      maschio cardiac ipertens new_cardiac new_ipertens dolor;
 bmi=peso/((stat/100)**2);
-
 
 /* dataset con età>=70 */
 data prova2.anziani;
@@ -97,12 +93,9 @@ keep sesso eta ictus fumo iper bmi cuore mcs MH EVDOL1 iposo1
 bmi=peso/((stat/100)**2);
 where eta>=70;
 
-
-
 /* Nuove variabili */
 if sesso=1 then maschio=1;
 else if sesso=2 then maschio=0;
-
 
 if evdol1=1 then dolor=0;       /* 0: non ha subito eventi dolorosi negli ultimi 3 anni */
  else if evdol1=. then dolor=1;   /* 1: ha subito un qualche tipo di evento doloroso
@@ -129,9 +122,6 @@ if arr(i) in (1) then newmal(i)=0;            /*mai sofferto la malattia */
 end;
 run;
 
-
-
-
 ods graphics on;
 proc freq data=prova2.anziani order=formatted;
 tables ictus*(sesso eta cardiac ipertens bmi fumo sodio dolor mcs mh)/nopercent norow chisq 
@@ -141,15 +131,9 @@ sodio dieta. dolor suffer. sesso sex. bmi obeso. mh MH. mcs MCS.;
 run;
 ods graphics off;
 
-
-
-
 proc freq data=prova2.anziani order=formatted;
 tables mh*mcs/ measures;     /*Correlazione di Pearson= 0,8799 */
 run;
-
-
-
 
 /* età */
 proc freq data=prova2.completo;
@@ -167,8 +151,6 @@ tables eta*sesso/ ;
 format eta age. sesso sex.;
 run;
 
-
-
 /* distribuzione eta*sesso per dataset completo */
 proc univariate data=prova2.completo;
 class sesso;
@@ -181,9 +163,6 @@ class sesso;
 var eta;
 format eta age. sesso sex.;
 run;
-
-
-
 
 /* Sodio-Ipertensione-Ictus */
 /* Controllo eventuale confondente: dieta iposodica */
@@ -209,8 +188,6 @@ format ipertens prepass. sodio dieta. ictus newictus.;
 title "Stratifcazione in base al consumo di sodio";
 run;
 
-
-
 /* Fumo-Cuore-Ictus (eventuale confondente= Fumo) format:newsmoke */
 proc freq data=prova2.anziani order=formatted;
 tables fumo*cardiac / nopercent nocol norow chisq measures relrisk;
@@ -229,8 +206,6 @@ format cardiac prepass. fumo newsmoke. ictus newictus.;
 title "Stratifcazione in base all'abitudine al fumo";
 run;
 ods rtf close;
-
-
 
 /* MCS-Evento doloroso-Ictus */
 proc freq data=prova2.anziani order=formatted;
@@ -252,8 +227,6 @@ format mcs MCS. dolor suffer. ictus newictus.;
 title "Stratifcazione in base all'indice MCS";
 run;
 
-
-
 /* MH-Evento doloroso-Ictus */
 proc freq data=prova2.anziani order=formatted;
 tables mh*ictus/ nopercent nocol relrisk chisq;
@@ -274,9 +247,6 @@ tables mh*dolor*ictus / nocol norow nopercent relrisk cmh chisq
 format mh MH. dolor suffer. ictus newictus.;
 title "Stratifcazione in base al MH ";
 run;
-
-
-
 
 /* Sesso-Cuore-Ictus */ 
 proc freq data=prova2.anziani order=formatted;
@@ -301,10 +271,6 @@ format sesso sex. cardiac prepass. ictus newictus.;
 title "Stratifcazione in base al sesso";
 run;
 
-
-
-
-
 /* Ipertensione-Cuore-Ictus */
 proc freq data=prova2.anziani order=formatted;
 tables ipertens*ictus / nopercent nocol relrisk;
@@ -327,10 +293,6 @@ title "Stratifcazione in base al consumo di sodio";
 format ipertens prepass. cardiac prepass. ictus newictus.;
 run;
 
-
-
-
-
 /* Età-Fumo-Ictus (eventuale confondente= età) */
 proc freq data=prova2.anziani order=formatted;
 tables fumo*ictus / nopercent nocol norow chisq measures relrisk;
@@ -347,9 +309,6 @@ tables eta*fumo*ictus / nocol norow nopercent relrisk cmh chisq plots(only)=odds
 format eta age. fumo newsmoke. ictus newictus.;
 title "Stratifcazione in base all'età";
 run;
-
-
-
 
 ods graphics on;
 title 'Regressione logistica con interazione';
@@ -368,5 +327,3 @@ model ictus (event='1_Si, almeno un episodio') = sesso eta cardiac ipertens bmi 
 format bmi obeso. sesso sex. ictus newictus. eta age. cardiac prepass. ipertens prepass. fumo newsmoke. dolor suffer. sodio dieta. mcs MCS. mh MH.;
 run;
 ods graphics off;
-
-
